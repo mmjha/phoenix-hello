@@ -8,16 +8,64 @@ defmodule HelloWeb.Router do
     plug :put_root_layout, {HelloWeb.LayoutView, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug HelloWeb.Plugs.Locale, "en"
   end
 
   pipeline :api do
     plug :accepts, ["json"]
   end
 
+  pipeline :review_checks do
+    plug :browser
+    # plug :ensure_authenticated_user
+    # plug :ensure_user_owns_review
+  end
+
   scope "/", HelloWeb do
     pipe_through :browser
+    # pipe_through [:authenticate_user, :ensure_admin]
 
-    get "/", PageController, :index
+    forward "/jobs", BackgroundJob.Plug
+
+    # get "/", PageController, :index
+    # get "/hello", HelloController, :index
+    # get "/hello/:messenger", HelloController, :show
+
+    # resources "/users", UserController do
+    #   resources "/posts", PostController, only: [:index, :show]
+    # end
+    # resources "/comments", CommentController, except: [:delete]
+    # resources "/reviews", ReviewController
+  end
+
+  scope "/", AnotherAppWeb do
+    pipe_through :browser
+
+    resources "/posts", PostController
+  end
+
+  scope "/reviews", HelloWeb do
+    pipe_through :review_checks
+
+    resources "/", ReviewController
+  end
+
+  scope "/admin", HelloWeb.Admin, as: :admin do
+    pipe_through :browser
+
+    resources "/images", ImageController
+    resources "/reviews", ReviewController
+    resources "/users", UserController
+  end
+
+  scope "/api", HelloWeb.Api, as: :api do
+    pipe_through :api
+
+    scope "/v1", V1, as: :v1 do
+      resources "/images", ImageController
+      resources "/reviews", ReviewController
+      resources "/users", UserController
+    end
   end
 
   # Other scopes may use custom stacks.
