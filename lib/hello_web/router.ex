@@ -2,7 +2,7 @@ defmodule HelloWeb.Router do
   use HelloWeb, :router
 
   pipeline :browser do
-    plug :accepts, ["html"]
+    plug :accepts, ["html", "text"]
     plug :fetch_session
     plug :fetch_live_flash
     plug :put_root_layout, {HelloWeb.LayoutView, :root}
@@ -25,17 +25,18 @@ defmodule HelloWeb.Router do
     pipe_through :browser
     # pipe_through [:authenticate_user, :ensure_admin]
 
-    forward "/jobs", BackgroundJob.Plug
+    # forward "/jobs", BackgroundJob.Plug
 
-    # get "/", PageController, :index
-    # get "/hello", HelloController, :index
-    # get "/hello/:messenger", HelloController, :show
+    get "/", PageController, :index
+    get "/hello", HelloController, :index
+    get "/hello/:messenger", HelloController, :show
+    get "/redirect_test", PageController, :redirect_test
 
-    # resources "/users", UserController do
-    #   resources "/posts", PostController, only: [:index, :show]
-    # end
-    # resources "/comments", CommentController, except: [:delete]
-    # resources "/reviews", ReviewController
+    resources "/users", UserController do
+      resources "/posts", PostController, only: [:index, :show]
+    end
+    resources "/comments", CommentController, except: [:delete]
+    resources "/reviews", ReviewController
   end
 
   scope "/", AnotherAppWeb do
