@@ -22,4 +22,12 @@ defmodule HelloWeb.HelloController do
     |> assign(:receiver, "Dwezil")
     |> render("show.html")
   end
+
+  def test(conn, %{"username" => username}) do
+    # render(conn, "test.html", username: username)
+    conn
+    |> assign(:username, username)
+    |> assign(:class, "")
+    |> render("test.html")
+  end
 end

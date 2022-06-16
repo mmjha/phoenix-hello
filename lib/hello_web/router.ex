@@ -28,8 +28,10 @@ defmodule HelloWeb.Router do
     # forward "/jobs", BackgroundJob.Plug
 
     get "/", PageController, :index
+    get "/show", PageController, :show
     get "/hello", HelloController, :index
     get "/hello/:messenger", HelloController, :show
+    get "/hello/test/:username", HelloController, :test
     get "/redirect_test", PageController, :redirect_test
 
     resources "/users", UserController do

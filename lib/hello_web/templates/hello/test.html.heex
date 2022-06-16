@@ -1,0 +1,9 @@
+<section class="phx-hero">
+    <div title="My div" class={@class}>
+        <%= for x <- 1..10 do %> 
+            <%= raw "<b>Bold?</b>" %>
+            <h2><%= x %> <%= @username %></h2>
+        <% end %>
+    </div>
+    <!-- <HelloWeb.MyComponent.greet name="Brazil" /> -->
+</section>

@@ -11,10 +11,18 @@ defmodule HelloWeb.PageController do
     # redirect(conn, to: "/redirect_test")
     # redirect(conn, external: "https://elixir-lang.org/")
     # redirect(conn, to: Routes.page_path(conn, :redirect_test))
-    conn
-    |> put_flash(:info, "Welcome to Phoenix, from flash info!")
-    |> put_flash(:error, "Let's pretend we have an error.")
-    |> redirect(to: Routes.page_path(conn, :redirect_test))
+    # conn
+    # |> put_flash(:info, "Welcome to Phoenix, from flash info!")
+    # |> put_flash(:error, "Let's pretend we have an error.")
+    # |> redirect(to: Routes.page_path(conn, :redirect_test))
+    # render(conn, "index.html")
+    pages = [%{title: "foo"}, %{title: "bar"}]
+    render(conn, "index.json", pages: pages)
+  end
+
+  def show(conn, _params) do
+    page = %{title: "foo"}
+    render(conn, "show.json", page: page)
   end
 
   def redirect_test(conn, _params) do
