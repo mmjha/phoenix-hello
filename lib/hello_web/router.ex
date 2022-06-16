@@ -24,52 +24,52 @@ defmodule HelloWeb.Router do
   scope "/", HelloWeb do
     pipe_through :browser
     # pipe_through [:authenticate_user, :ensure_admin]
-
     # forward "/jobs", BackgroundJob.Plug
 
     get "/", PageController, :index
-    get "/show", PageController, :show
-    get "/hello", HelloController, :index
-    get "/hello/:messenger", HelloController, :show
-    get "/hello/test/:username", HelloController, :test
-    get "/redirect_test", PageController, :redirect_test
+    # get "/show", PageController, :show
+    # get "/hello", HelloController, :index
+    # get "/hello/:messenger", HelloController, :show
+    # get "/hello/test/:username", HelloController, :test
+    # get "/redirect_test", PageController, :redirect_test
+    # resources "/comments", CommentController, except: [:delete]
+    # resources "/reviews", ReviewController
+    # resources "/users", UserController do
+    #   resources "/posts", PostController, only: [:index, :show]
+    # end
 
-    resources "/users", UserController do
-      resources "/posts", PostController, only: [:index, :show]
-    end
-    resources "/comments", CommentController, except: [:delete]
-    resources "/reviews", ReviewController
+    resources "/products", ProductController
   end
 
-  scope "/", AnotherAppWeb do
-    pipe_through :browser
+  # scope "/", AnotherAppWeb do
+  #   pipe_through :browser
 
-    resources "/posts", PostController
-  end
+  #   resources "/posts", PostController
+  # end
 
-  scope "/reviews", HelloWeb do
-    pipe_through :review_checks
+  # scope "/reviews", HelloWeb do
+  #   pipe_through :review_checks
 
-    resources "/", ReviewController
-  end
+  #   resources "/", ReviewController
+  # end
 
-  scope "/admin", HelloWeb.Admin, as: :admin do
-    pipe_through :browser
+  # scope "/admin", HelloWeb.Admin, as: :admin do
+  #   pipe_through :browser
 
-    resources "/images", ImageController
-    resources "/reviews", ReviewController
-    resources "/users", UserController
-  end
+  #   resources "/images", ImageController
+  #   resources "/reviews", ReviewController
+  #   resources "/users", UserController
+  # end
 
-  scope "/api", HelloWeb.Api, as: :api do
-    pipe_through :api
+  # scope "/api", HelloWeb.Api, as: :api do
+  #   pipe_through :api
 
-    scope "/v1", V1, as: :v1 do
-      resources "/images", ImageController
-      resources "/reviews", ReviewController
-      resources "/users", UserController
-    end
-  end
+  #   scope "/v1", V1, as: :v1 do
+  #     resources "/images", ImageController
+  #     resources "/reviews", ReviewController
+  #     resources "/users", UserController
+  #   end
+  # end
 
   # Other scopes may use custom stacks.
   # scope "/api", HelloWeb do
