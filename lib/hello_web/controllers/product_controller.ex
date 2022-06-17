@@ -11,6 +11,7 @@ defmodule HelloWeb.ProductController do
 
   def new(conn, _params) do
     changeset = Catalog.change_product(%Product{})
+    IO.inspect changeset
     render(conn, "new.html", changeset: changeset)
   end
 
@@ -27,7 +28,11 @@ defmodule HelloWeb.ProductController do
   end
 
   def show(conn, %{"id" => id}) do
-    product = Catalog.get_product!(id)
+    product =
+      id
+      |> Catalog.get_product!()
+      |> Catalog.inc_page_views()
+
     render(conn, "show.html", product: product)
   end
 
