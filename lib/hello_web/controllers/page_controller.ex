@@ -17,12 +17,13 @@ defmodule HelloWeb.PageController do
     # |> redirect(to: Routes.page_path(conn, :redirect_test))
     # render(conn, "index.html")
     pages = [%{title: "foo"}, %{title: "bar"}]
-    render(conn, "index.json", pages: pages)
+    # render(conn, "index.json", pages: pages)
+    render(conn, "index.html", pages: pages)
   end
 
   def show(conn, _params) do
     page = %{title: "foo"}
-    render(conn, "show.json", page: page)
+    render(conn, "show.html", page: page)
   end
 
   def redirect_test(conn, _params) do
