@@ -84,8 +84,8 @@ defmodule Hello.ShoppingCart do
     |> Ecto.Changeset.put_assoc(:cart, cart)
     |> Ecto.Changeset.put_assoc(:product, product)
     |> Repo.insert(
-      on_conflict: [inc: [quantity: 1]],
-      conflict_target: [:cart_id, :product_id]
+      # on_conflict: [inc: [quantity: 1]],
+      # conflict_target: [:cart_id, :product_id]
     )
   end
 
@@ -271,35 +271,9 @@ defmodule Hello.ShoppingCart do
     end)
   end
 
-  def complete_order(%ShoppingCart.Cart{} = cart) do
-    line_items =
-      Enum.map(cart.items, fn item ->
-        %{product_id: item.product_id, price: item.product.price, quantity: item.quantity}
-      end)
-
-    order =
-      Ecto.Changeset.change(%Order{},
-        user_uuid: cart.user_uuid,
-        total_price: ShoppingCart.total_cart_price(cart),
-        line_items: line_items
-      )
-
-    Ecto.Multi.new()
-    |> Ecto.Multi.insert(:order, order)
-    |> Ecto.Multi.run(:prune_cart, fn _repo, _changes ->
-      ShoppingCart.prune_cart_items(cart)
-    end)
-    |> Repo.transaction()
-    |> case do
-      {:ok, %{order: order}} -> {:ok, order}
-      {:error, name, value, _changes_so_far} -> {:error, {name, value}}
-    end
-  end
-
   def prune_cart_items(%Cart{} = cart) do
     {_, _} = Repo.delete_all(from(i in CartItem, where: i.cart_id == ^cart.id))
     {:ok, reload_cart(cart)}
   end
-
 
 end
