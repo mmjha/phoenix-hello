@@ -124,7 +124,7 @@ defmodule Hello.ShoppingCart do
 
     Ecto.Multi.new()
     |> Ecto.Multi.update(:cart, changeset)
-    |> Ecto.Multi.delete_all(:discared_items, fn %{cart: cart} ->
+    |> Ecto.Multi.delete_all(:discarded_items, fn %{cart: cart} ->
       from(i in CartItem, where: i.cart_id == ^cart.id and i.quantity == 0)
     end)
     |> Repo.transaction()
@@ -264,10 +264,42 @@ defmodule Hello.ShoppingCart do
   end
 
   def total_cart_price(%Cart{} = cart) do
-    Enum.reduce(cart.item, 0, fn item, acc ->
+    Enum.reduce(cart.items, 0, fn item, acc ->
       item
       |> total_item_price()
       |> Decimal.add(acc)
     end)
   end
+
+  def complete_order(%ShoppingCart.Cart{} = cart) do
+    line_items =
+      Enum.map(cart.items, fn item ->
+        %{product_id: item.product_id, price: item.product.price, quantity: item.quantity}
+      end)
+
+    order =
+      Ecto.Changeset.change(%Order{},
+        user_uuid: cart.user_uuid,
+        total_price: ShoppingCart.total_cart_price(cart),
+        line_items: line_items
+      )
+
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(:order, order)
+    |> Ecto.Multi.run(:prune_cart, fn _repo, _changes ->
+      ShoppingCart.prune_cart_items(cart)
+    end)
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{order: order}} -> {:ok, order}
+      {:error, name, value, _changes_so_far} -> {:error, {name, value}}
+    end
+  end
+
+  def prune_cart_items(%Cart{} = cart) do
+    {_, _} = Repo.delete_all(from(i in CartItem, where: i.cart_id == ^cart.id))
+    {:ok, reload_cart(cart)}
+  end
+
+
 end
